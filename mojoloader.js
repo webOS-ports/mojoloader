@@ -214,10 +214,10 @@ if (typeof MojoLoader === 'undefined')
 				try {
 					fs.accessSync(catPath);
 					library.exports = this._propogateGlobals(require(catPath), this._root);
+					return;
 				} catch (e) {
 					console.warn("_loadLibrary : Couldn't find " + catPath);
 				}
-				return;
 			}
 			var sources = manifest.files.javascript;
 			var slen = sources.length;
