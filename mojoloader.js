@@ -350,7 +350,7 @@ if (typeof MojoLoader === 'undefined')
 			else if (typeof require !== "undefined")
 			{
 				var webOS = require('webos');
-				var sys = require('sys');
+				//var sys = require('sys');
 				function nodeRequire (loader, filesArary) {
 				    return webOS.require(require, loader, filesArary);
 				}
