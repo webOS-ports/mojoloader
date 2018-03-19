@@ -1,6 +1,4 @@
-// @@@LICENSE
-//
-//      Copyright (c) 2009-2013 LG Electronics, Inc.
+// Copyright (c) 2009-2018 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// LICENSE@@@
+// SPDX-License-Identifier: Apache-2.0
 
 /*globals PalmSystem palmGetResource _mojoRequire palmRequire */
 /*jslint evil: true */
@@ -38,17 +36,17 @@ if (typeof MojoLoader === 'undefined')
 		_publicPath: [ "/usr/palm/frameworks/", "frameworks/" ],
 		_tritonPath: [ "" ],
 		_path: undefined,
-
+	
 		_loaded: {},
-
+	
 		_root: this,
-
+	
 		/*
 		 * Define the environment of the loader.
 		 */
 		_env: (typeof document !== "undefined" ? "browser" : "triton"),
 		_isPalm: (typeof PalmSystem === "undefined" || PalmSystem.identifier.indexOf("com.palm.") === 0),
-
+	
 		/*
 		 * The current root of this module (the current directory by default)
 		 */
@@ -59,8 +57,8 @@ if (typeof MojoLoader === 'undefined')
 		 *
 		 *   var libs = MojoLoader.require({ name: "mylibrary", version: "1.0" }, { name: "Mojo.UI", submission: "123" });
 		 *   libs["mylibrary"].doit();
-		 *
-		 * The function takes a list of name/versions for each framework we require and returns an object which has a
+		 * 
+		 * The function takes a list of name/versions for each framework we require and returns an object which has a 
 		 * property for the exports of each loaded framework.
 		 */
 		require: function()
@@ -119,7 +117,7 @@ if (typeof MojoLoader === 'undefined')
 			// They're all loaded
 			return libs;
 		},
-
+		
 		locate: function(arg)
 		{
 			var info = this._locate(arg.name, this._getVersion(arg));
@@ -132,15 +130,15 @@ if (typeof MojoLoader === 'undefined')
 				return undefined;
 			}
 		},
-
+		
 		_loadFileNode: function(pathToFile) {
 			return fs.readFileSync(pathToFile, "utf8");
 		},
-
+		
 		_loadFileMojoOrTriton: function(pathToFile) {
 			return palmGetResource(pathToFile, false);
 		},
-
+		
 		_locate: function(name, version)
 		{
 			var path = this._path;
@@ -156,7 +154,7 @@ if (typeof MojoLoader === 'undefined')
 					var manifestSource = this._loadFile(manifestPath);
 					var manifest = JSON.parse(manifestSource);
 					if (manifest)
-					{
+					{	
 						return { base: vbase, manifest: manifest };
 					}
 				}
@@ -165,10 +163,10 @@ if (typeof MojoLoader === 'undefined')
 					//console.log(_);
 				}
 			}
-
+			
 			return undefined;
 		},
-
+	
 		_getVersion: function(arg)
 		{
 			return "version/" + arg.version;
@@ -202,7 +200,7 @@ if (typeof MojoLoader === 'undefined')
 			eval(data);
 			this._root[lname](this._newLoader(base), library.exports, this._root);
 		},
-
+		
 		_loadLibrary: function(library, base, manifest)
 		{
 			var jbase = base + "javascript/";
@@ -211,12 +209,9 @@ if (typeof MojoLoader === 'undefined')
 			if (this.isNode()) {
 				var fs=require('fs');
 				catPath = base+"node_module.js";
-				try {
-					fs.accessSync(catPath);
+				if (fs.existsSync(catPath)) {
 					library.exports = this._propogateGlobals(require(catPath), this._root);
 					return;
-				} catch (e) {
-					console.warn("_loadLibrary : Couldn't find " + catPath);
 				}
 			}
 			var sources = manifest.files.javascript;
@@ -227,10 +222,10 @@ if (typeof MojoLoader === 'undefined')
 			}
 			library.exports = this._propogateGlobals(this._require(this._newLoader(base), paths), this._root).exports;
 		},
-
+		
 		_propogateGlobals: function(to, from)
 		{
-			var syms = [
+			var syms = [ 
 				/* Common */ 	"console", "palmGetResource", "setTimeout", "clearTimeout", "setInterval", "clearInterval",
 				/* Triton */	"getenv", "readInput", "quit", "include", "_mojoRequire", "webOS", "palmPutResource",
 				/* Mojo */		"XMLHttpRequest", "palmRequire", "palmInclude", "PalmServiceBridge", "PalmSystem"
@@ -267,7 +262,7 @@ if (typeof MojoLoader === 'undefined')
 				return false;
 			}
 		},
-
+		
 		_loadNodeBuiltin: function(library, base) {
 			var bName = this.builtinLibName(library.name, library.versionNumber);
 			if (global[bName]) {
@@ -327,17 +322,17 @@ if (typeof MojoLoader === 'undefined')
 				{
 					return self.require.apply(self, arguments);
 				},
-
+			
 				override: function()
 				{
 					return self.override.apply(self, arguments);
 				}
 			};
 		},
-
+		
 		_selectLoader: function()
 		{
-			if (typeof _mojoRequire !== "undefined")
+			if (typeof _mojoRequire !== "undefined") 
 			{
 				this._require = _mojoRequire;
 				this._loadFile = this._loadFileMojoOrTriton;
@@ -350,7 +345,7 @@ if (typeof MojoLoader === 'undefined')
 			else if (typeof require !== "undefined")
 			{
 				var webOS = require('webos');
-				//var sys = require('sys');
+				var sys = require('sys');
 				function nodeRequire (loader, filesArary) {
 				    return webOS.require(require, loader, filesArary);
 				}
@@ -359,12 +354,12 @@ if (typeof MojoLoader === 'undefined')
 			}
 			else
 			{
-				if (this._env == 'browser' && typeof palmGetResource === "undefined")
+				if (this._env == 'browser' && typeof palmGetResource === "undefined") 
 				{
-					palmGetResource = function(pathToResource)
+					palmGetResource = function(pathToResource) 
 					{
 						var req = new XMLHttpRequest();
-						req.open('GET', pathToResource + "?palmGetResource=true", false);
+						req.open('GET', pathToResource + "?palmGetResource=true", false); 
 						req.send(null);
 						if (req.status >= 200 && req.status < 300) {
 							return req.responseText;
@@ -376,27 +371,27 @@ if (typeof MojoLoader === 'undefined')
 				this._loadLibrary = this._loadLibraryUsingEval;
 			}
 		},
-
+		
 		runtime: function() {
 			if (typeof process !== "undefined") {
 				return "node";
 			}
-
+			
 			if (typeof webOS !== "undefined") {
 				return "triton";
 			}
-
+			
 			return "browser";
 		},
-
+		
 		isBrowser: function() {
 			return this.runtime() === "browser";
 		},
-
+		
 		isTriton: function() {
 			return this.runtime() === "triton";
 		},
-
+		
 		isNode: function() {
 			return this.runtime() === "node";
 		}
